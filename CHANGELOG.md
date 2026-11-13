@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.2] - 2026-11-14
+
+Docs: README quality pass.
+
+### Changed
+- README: added a results chart, a "Requirements & cost" paragraph, a Limitations section (English and 繁體中文), the support line, and a `## Support 支持` footer.
+- Added `SECURITY.md` and `CITATION.cff`. No code change.
+
 ## [0.2.1] - 2026-07-15
 
 Correcting how v0.2.0 read its own breeze26 number.

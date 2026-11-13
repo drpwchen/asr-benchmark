@@ -6,6 +6,8 @@
 
 📝 完整的實測過程與心得：[我的資料，我的 benchmark：幫演講筆記系統換一顆語音辨識引擎](https://drpwchen.com/posts/my-data-my-benchmark/)
 
+![長條圖：在 15 段醫學演講上，Whisper large-v3 抓到 435 個真實詞彙，Breeze-ASR-25 為 587，調校後為 649；Breeze-ASR-26 為 182，因為它把英文音譯成漢字](docs/assets/asr-benchmark-results.png)
+
 ---
 
 ## 為什麼需要這個
@@ -78,7 +80,17 @@ most-invented garbage per combo (this is where the hallucinations show):
   large-v3/novad            ['motibra', 'grutius', 'idioma', ...]
 ```
 
+**需求與費用：** Python 3 與 `faster-whisper`（`pip install -r requirements.txt`）。`transcribe_variants.py` 的 `--device` 預設是 `cuda`，我是在 8GB NVIDIA 顯卡上跑；沒有 GPU 可傳 `--device cpu`，會慢很多。模型都是開源的，不需要 API key，沒有任何金錢成本，只有你自己的電費與時間。你要準備的是：一批你領域的文字語料（建字典用）、一批要測的音檔。
+
+> 🧋 省了你時間的話，[請我喝杯飲料](https://drpwchen.com/support/)。
+
 **一次只跑一個模型，這是刻意的。** 把兩個模型載進同一個 process，是這個專案第一個錯誤結論的來源：它們在一張 8GB 顯卡上互搶記憶體，於是第二個模型看起來「慢了兩倍」。壞掉的是量測工具，不是模型。
+
+## 限制
+
+- 它量的是「真實詞彙的型別數」與幻覺，不是術語正確率（見上面「誠實說明這把尺的限制」）。
+- 結果來自我自己的 15 段醫學演講與一張 8GB 顯卡，你的音檔、口音與硬體可能得到不同的排名；請用你自己的資料重跑。
+- 附的字典是復健科的，拿去測別的領域是不對的尺。
 
 ## 附的範例字典
 
@@ -118,9 +130,9 @@ n=1 不是 benchmark。
 
 MIT. 作者 [陳柏威 Po-Wei Chen](https://drpwchen.com)（復健科醫師）。
 
-如果這個工具幫你省下了時間，歡迎請我喝杯珍奶 🧡
+## Support 支持
 
-[![Buy me a drink](https://img.shields.io/badge/🧋_Buy_me_a_drink-8a6d4e?style=for-the-badge)](https://drpwchen.com/support/)
+如果這個工具幫你省下了時間，歡迎[請我喝杯飲料](https://drpwchen.com/support/) 🧋 ／ If this saved you time, you can [buy me a drink](https://drpwchen.com/en/support/).
 
 ---
 
@@ -153,6 +165,10 @@ python build_lexicon.py /path/to/corpus -o lexicon/mine.txt
 python transcribe_variants.py MediaTek-Research/Breeze-ASR-25 novad --clips clips/
 python eval_asr.py out/ --lexicon lexicon/mine.txt --domain domain.json
 ```
+
+**Requirements & cost:** Python 3 and `faster-whisper` (`pip install -r requirements.txt`). `transcribe_variants.py` defaults to `--device cuda`; I ran it on an 8 GB NVIDIA card, and `--device cpu` works but is much slower. The models are open source: no API key and no money cost beyond your own electricity and time. You bring a text corpus from your field (for the lexicon) and the audio you want to test.
+
+> 🧋 Saved you some time? [Buy me a drink](https://drpwchen.com/en/support/).
 
 Run **one model per process**. Loading two models into one process on an 8 GB card made the second look "2x slower". The instrument was broken, not the model.
 
@@ -225,6 +241,12 @@ And: my first round was n=1, and produced three confident conclusions that were 
 later overturned. n=1 is not a benchmark.
 
 📊 **Full worked example, with every number and every limitation: [RESULTS.md](RESULTS.md)**
+
+## Limitations
+
+- It measures real word-types and hallucination, not terminology accuracy (see "Be honest about what this measures" above).
+- Results come from my own 15 medical lectures and one 8 GB GPU; your audio, accents and hardware may rank the models differently, so rerun it on your own data.
+- The bundled lexicon is PMR (rehabilitation medicine); it is the wrong ruler for other fields.
 
 ## Related
 
